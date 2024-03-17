@@ -11,13 +11,13 @@ function displayBodyElements(bool $isConnected, bool $isAdmin, $username) {
 
             <div class="collapse navbar-collapse" id="navbarNav"><div class="navbar-nav">
                     <a class="nav-item nav-link" href="/">Accueil</a>
-                    <a class="nav-item nav-link" href="/rules">Règles</a>
-                    <a class="nav-item nav-link" href="/games">Parties</a>
+                    <a class="nav-item nav-link" href="/rules/rules.php">Règles</a>
+                    <a class="nav-item nav-link" href="/games/listgames.php">Parties</a>
     <?php
     if ($isConnected) {
         ?>
-        <a class="nav-item nav-link" href="/mygames">Mes parties</a>
-        <a class="btn btn-outline-light nav-item" href="/creategame">Créer une partie</a>
+        <a class="nav-item nav-link" href="/games/mygameslist.php">Mes parties</a>
+        <a class="btn btn-outline-light nav-item" href="/games/gamecreate.php">Créer une partie</a>
         <?php
     }
     ?>
@@ -26,7 +26,7 @@ function displayBodyElements(bool $isConnected, bool $isAdmin, $username) {
     <?php
     if ($isAdmin) {
         ?>
-        <a class="btn btn-outline-light nav-item" href="/createaccount">Créer un compte</a>
+        <a class="btn btn-outline-light nav-item" href="/login/createaccount.php">Créer un compte</a>
         <?php
     }
 
@@ -39,7 +39,7 @@ function displayBodyElements(bool $isConnected, bool $isAdmin, $username) {
                 <?= $username ?>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
-                <li><a class="dropdown-item" href="/changepassword">Changer le mot de passe</a></li>
+                <li><a class="dropdown-item" href="/login/changepassword.php">Changer le mot de passe</a></li>
                 <li><a class="dropdown-item" href="/login/disconnect.php">Déconnexion</a></li>
             </ul>
         </div>
@@ -47,7 +47,7 @@ function displayBodyElements(bool $isConnected, bool $isAdmin, $username) {
     } else
     {
         ?>
-        <a class="btn btn-outline-light nav-item" href="/login">Connexion</a>
+        <a class="btn btn-outline-light nav-item" href="/login/login.php">Connexion</a>
         <?php
     }
     ?>
