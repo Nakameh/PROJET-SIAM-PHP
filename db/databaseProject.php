@@ -15,6 +15,10 @@ class DataBaseProject
     private PDOStatement $prepareUpdatePassword;
     private PDOStatement $prepareGetActivesUsers;
     private PDOStatement $prepareIdUserExist;
+    private PDOStatement $prepareCreateGame;
+    private PDOStatement $prepareGetListGamesWith1Player;
+    private PDOStatement $prepareGetGame;
+    private PDOStatement $prepareAddGameUser2;
 
 
     public function __construct(string $path) {
@@ -51,6 +55,16 @@ class DataBaseProject
 
         $this->prepareIdUserExist = $this->pdo->prepare("SELECT * FROM User WHERE id_User = :id_User");
 
+        $this->prepareCreateGame = $this->pdo->prepare("INSERT INTO Game
+                (game_board_Game, nb_turn_Game, date_debut_Game, status_Game, id_gameuser1) VALUES
+                (:game_board_Game, :nb_turn_Game, :date_debut_Game, :status_Game, :id_gameuser1)");
+
+        $this->prepareGetListGamesWith1Player = $this->pdo->prepare("SELECT * FROM Game WHERE id_gameuser2 IS NULL");
+
+        $this->prepareGetGame = $this->pdo->prepare("SELECT * FROM Game WHERE id_Game = :id_Game");
+
+        $this->prepareAddGameUser2 = $this->pdo->prepare("UPDATE Game SET id_gameuser2 = :id_gameuser2 WHERE id_Game = :id_Game AND id_gameuser2 IS NULL");
+
         if (!$this->userExist("admin")) {
             $this->createUser("admin", 1, password_hash("admin", PASSWORD_DEFAULT));
         }
@@ -65,7 +79,6 @@ class DataBaseProject
                             status_Game INT NOT NULL,
                             id_gameuser1 INTEGER NOT NULL,
                             id_gameuser2 INTEGER,
-                            id_userplaying INTEGER,
                             id_user_winner INTEGER);";
         $this->pdo->exec($sql);
     }
@@ -163,6 +176,35 @@ class DataBaseProject
     public function idUserExist(int $id_User): bool{
         $this->prepareIdUserExist->execute([":id_User" => $id_User]);
         return $this->prepareIdUserExist->fetch(PDO::FETCH_ASSOC) != false;
+    }
+
+    public function createGame(string $game_board_Game, int $nb_turn_Game,
+                                string $date_debut_Game, int $status_Game, int $id_gameuser1):string{
+        $this->prepareCreateGame->execute([
+            ":game_board_Game" => $game_board_Game,
+            ":nb_turn_Game" => $nb_turn_Game,
+            ":date_debut_Game" => $date_debut_Game,
+            ":status_Game" => $status_Game,
+            ":id_gameuser1" => $id_gameuser1
+        ]);
+        return $this->pdo->lastInsertId();
+    }
+
+    public function getListGamesWith1Player() {
+        $this->prepareGetListGamesWith1Player->execute();
+        return $this->prepareGetListGamesWith1Player->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getGame(int $id_Game) {
+        $this->prepareGetGame->execute([":id_Game" => $id_Game]);
+        return $this->prepareGetGame->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function addGameUser2(int $id_Game, int $id_gameuser2) {
+        $this->prepareAddGameUser2->execute([
+            ":id_Game" => $id_Game,
+            ":id_gameuser2" => $id_gameuser2
+        ]);
     }
 
 }

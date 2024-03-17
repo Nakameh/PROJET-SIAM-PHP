@@ -5,7 +5,7 @@ require_once "../vue/body.php";
 <!DOCTYPE html>
 <html lang="en">
 <?php
-    echoHead("Siam - Partie : Attente");
+    echoHead("Siam - Partie : Attente d'un adversaire");
 ?>
 <body>
     <?php
