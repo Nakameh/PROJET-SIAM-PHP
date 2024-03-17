@@ -14,6 +14,7 @@ class DataBaseProject
     private PDOStatement $prepareUpdateDateLastSeen;
     private PDOStatement $prepareUpdatePassword;
     private PDOStatement $prepareGetActivesUsers;
+    private PDOStatement $prepareIdUserExist;
 
 
     public function __construct(string $path) {
@@ -47,6 +48,8 @@ class DataBaseProject
         
         $this->prepareGetActivesUsers = $this->pdo->prepare("SELECT username_User FROM User
             WHERE dateLastSeen_User > :dateLastSeen");
+
+        $this->prepareIdUserExist = $this->pdo->prepare("SELECT * FROM User WHERE id_User = :id_User");
 
         if (!$this->userExist("admin")) {
             $this->createUser("admin", 1, password_hash("admin", PASSWORD_DEFAULT));
@@ -155,6 +158,11 @@ class DataBaseProject
     public function getActivesUsers() {
         $this->prepareGetActivesUsers->execute([":dateLastSeen" => date("Y-m-d H:i:s", strtotime("-5 minutes"))]);
         return $this->prepareGetActivesUsers->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function idUserExist(int $id_User): bool{
+        $this->prepareIdUserExist->execute([":id_User" => $id_User]);
+        return $this->prepareIdUserExist->fetch(PDO::FETCH_ASSOC) != false;
     }
 
 }

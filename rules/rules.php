@@ -6,17 +6,19 @@ require_once "../db/databaseProject.php";
 session_start();
 
 $dbp = new DataBaseProject("../db/projet.sqlite3");
+$isConnected = false;
 $isAdmin = false;
 
 if (isset($_SESSION['id_user'])) {
+    if (!$dbp->idUserExist($_SESSION['id_user'])) {
+        header("Location: login/disconnect.php");
+        exit();
+    }
     $id_user = $_SESSION['id_user'];
     $username = $dbp->getUsername($id_user);
     $isAdmin = $dbp->isAdmin($id_user);
-    if (!$isAdmin) {
-        header("Location: ../index.php");
-        exit();
-    }
     $dbp->updateDateLastSeen($id_user);
+    $isConnected = true;
 }
 
 
@@ -31,7 +33,7 @@ if (isset($_SESSION['id_user'])) {
 ?>
 <body>
     <?php
-        displayBodyElements(true, $isAdmin, $username);
+        displayBodyElements($isConnected, $isAdmin, $username);
     ?>
     <style>
         .container {

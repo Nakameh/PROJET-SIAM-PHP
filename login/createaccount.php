@@ -15,6 +15,10 @@ if (!isset($_SESSION['id_user'])) {
     header("Location: ../index.php");
     exit();
 } else {
+    if (!$dbp->idUserExist($_SESSION['id_user'])) {
+        header("Location: login/disconnect.php");
+        exit();
+    }
     $id_user = $_SESSION['id_user'];
     $username = $dbp->getUsername($id_user);
     $isAdmin = $dbp->isAdmin($id_user);

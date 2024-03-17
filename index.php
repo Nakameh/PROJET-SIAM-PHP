@@ -12,6 +12,10 @@ $isAdmin = false;
 $username ="";
 
 if (isset($_SESSION['id_user'])) {
+    if (!$dbp->idUserExist($_SESSION['id_user'])) {
+        header("Location: login/disconnect.php");
+        exit();
+    }
     $isConnected = true;
     $isAdmin = $dbp->isAdmin($_SESSION['id_user']);
     $username = $dbp->getUsername($_SESSION['id_user']);
