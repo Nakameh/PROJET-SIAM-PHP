@@ -19,6 +19,8 @@ class DataBaseProject
     private PDOStatement $prepareGetListGamesWith1Player;
     private PDOStatement $prepareGetGame;
     private PDOStatement $prepareAddGameUser2;
+    private PDOStatement $prepareGetMyGames;
+    private PDOStatement $prepareGameHas2Players;
 
 
     public function __construct(string $path) {
@@ -63,7 +65,14 @@ class DataBaseProject
 
         $this->prepareGetGame = $this->pdo->prepare("SELECT * FROM Game WHERE id_Game = :id_Game");
 
-        $this->prepareAddGameUser2 = $this->pdo->prepare("UPDATE Game SET id_gameuser2 = :id_gameuser2 WHERE id_Game = :id_Game AND id_gameuser2 IS NULL");
+        $this->prepareAddGameUser2 = $this->pdo->prepare("UPDATE Game SET id_gameuser2 = :id_gameuser2
+                WHERE id_Game = :id_Game AND id_gameuser2 IS NULL");
+
+        $this->prepareGetMyGames = $this->pdo->prepare("SELECT * FROM Game
+                WHERE id_gameuser1 = :id_user OR id_gameuser2 = :id_user");
+
+        $this->prepareGameHas2Players = $this->pdo->prepare("SELECT * FROM Game WHERE id_Game = :id_Game AND id_gameuser2 IS NOT NULL");
+
 
         if (!$this->userExist("admin")) {
             $this->createUser("admin", 1, password_hash("admin", PASSWORD_DEFAULT));
@@ -206,5 +215,17 @@ class DataBaseProject
             ":id_gameuser2" => $id_gameuser2
         ]);
     }
+
+    public function getMyGames(int $id_user) {
+        $this->prepareGetMyGames->execute([":id_user" => $id_user]);
+        return $this->prepareGetMyGames->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function gameHas2Players(int $id_Game) {
+        $this->prepareGameHas2Players->execute([":id_Game" => $id_Game]);
+        return $this->prepareGameHas2Players->fetch(PDO::FETCH_ASSOC) != false;
+    }
+
+
 
 }

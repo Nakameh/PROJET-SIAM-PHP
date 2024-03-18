@@ -24,6 +24,12 @@ if (isset($_SESSION['id_user'])) {
 
 $activesUsers = $dbp->getActivesUsers();
 
+$listGames = $dbp->getListGamesWith1Player();
+
+if ($isConnected) {
+    $myGames = $dbp->getMyGames($_SESSION['id_user']);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -43,11 +49,55 @@ $activesUsers = $dbp->getActivesUsers();
             <div class="col-sm-12 col-md-4">
                 <div class="card bg-light mb-3">
                     <div class="card-body">
-                        <h2 class="card-title">Vos parties</h2>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group list-group-item">Partie 1</li>
-                            <li class="list-group list-group-item">Partie 2</li>
-                        </ul>
+                        <h5 class="card-title">Liste de mes parties :</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped" style="width : 0px;">
+                                <caption>Mes parties </caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Nombre de joueurs</th>
+                                        <th scope="col">Adversaire</th>
+                                        <th scope="col">Date de création</th>
+                                        <th scope="col">Rejoindre</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                        if ($isConnected)
+                                        {
+                                            foreach ($myGames as $game) {
+                                                ?>
+                                                <tr>
+                                                    <?php
+                                                        if (!empty($game["id_gameuser2"])) {
+                                                            ?>
+                                                            <td class="text-center">2/2</td>
+                                                            <?php
+                                                        } else {
+                                                            ?>
+                                                            <td class="text-center">1/2</td>
+                                                            <?php
+                                                        }
+                                                    if ($game["id_gameuser1"] == $_SESSION['id_user']) {
+                                                        ?>
+                                                        <td class="text-center"><?php echo $dbp->getUsername($game["id_gameuser2"]); ?></td>
+                                                        <?php
+                                                    } else {
+                                                        ?>
+                                                        <td class="text-center"><?php echo $dbp->getUsername($game["id_gameuser1"]); ?></td>
+                                                        <?php
+                                                    }
+                                                    ?>
+                                                    <td class="text-center"><?php echo $game["date_debut_Game"]; ?></td>
+                                                    <td class="text-center"><a href="games/gamejoin.php?idGame=<?php echo $game["id_Game"]; ?>" class="btn btn-primary">Rejoindre</a></td>
+                                                </tr>
+                                                <?php
+                                            }
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -55,11 +105,34 @@ $activesUsers = $dbp->getActivesUsers();
             <div class="col-sm-12 col-md-4">
                 <div class="card bg-light mb-3">
                     <div class="card-body">
-                        <h2 class="card-title">Parties en cours</h2>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group list-group-item">Partie 1</li>
-                            <li class="list-group list-group-item">Partie 2</li>
-                        </ul>
+                        <h5 class="card-title">Liste des parties en attente de joueurs :</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <caption>Parties en attente de joueurs</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Nombre de joueurs</th>
+                                        <th scope="col">Créateur</th>
+                                        <th scope="col">Date de création</th>
+                                        <th scope="col">Rejoindre</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                        foreach ($listGames as $game) {
+                                            ?>
+                                            <tr>
+                                                <td class="text-center">1/2</td>
+                                                <td class="text-center"><?php echo $dbp->getUsername($game["id_gameuser1"]); ?></td>
+                                                <td class="text-center"><?php echo $game["date_debut_Game"]; ?></td>
+                                                <td class="text-center"><a href="games/gamejoin.php?idGame=<?php echo $game["id_Game"]; ?>" class="btn btn-primary">Rejoindre</a></td>
+                                            </tr>
+                                            <?php
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

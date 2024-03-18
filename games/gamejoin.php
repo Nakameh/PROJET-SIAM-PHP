@@ -39,6 +39,10 @@ if ($game == null) {
 }
 
 if ($game["id_gameuser1"] == $id_user || $game["id_gameuser2"] == $id_user) {
+    if (empty($game["id_gameuser2"])) {
+        header("Location: gamewait.php?idGame=" . $idGame);
+        exit();
+    }
     header("Location: ../games/game.php?idGame=" . $idGame);
     exit();
 }

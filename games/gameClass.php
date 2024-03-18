@@ -18,6 +18,7 @@ class Game implements JsonSerializable
     private static string $east = "E";
     private static string $west = "W";
     private static string $empty = " ";
+    private static string $rock = "ROCK";
 
     public function __construct(int $lines, int $columns, int $deckSize, int $player1, int $player2,
                 int $activePlayer, array $board = null, array $deckPlayer1 = null, array $deckPlayer2 = null)
@@ -30,6 +31,9 @@ class Game implements JsonSerializable
         $this->activePlayer = $activePlayer;
         if ($board == null) {
             $this->board = array_fill(0, $lines, array_fill(0, $columns, self::$empty));
+            $this->board[2][1] = self::$rock;
+            $this->board[2][2] = self::$rock;
+            $this->board[2][3] = self::$rock;
         } else {
             $this->board = $board;
         }
@@ -48,5 +52,10 @@ class Game implements JsonSerializable
     public function jsonSerialize() : string
     {
         return json_encode(get_object_vars($this));
+    }
+
+    public function getBoard() : array
+    {
+        return $this->board;
     }
 }
