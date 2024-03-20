@@ -88,6 +88,12 @@ class DataBaseProject
         if (!$this->userExist("admin")) {
             $this->createUser("admin", 1, password_hash("admin", PASSWORD_DEFAULT));
         }
+        if (!$this->userExist("noah")) {
+            $this->createUser("noah", 0, password_hash("noah", PASSWORD_DEFAULT));
+        }
+        if (!$this->userExist("capu")) {
+            $this->createUser("capu", 0, password_hash("capu", PASSWORD_DEFAULT));
+        }
     }
 
     private function createGameTable() :void {
