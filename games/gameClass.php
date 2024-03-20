@@ -69,15 +69,86 @@ class Game implements JsonSerializable
         return $this->player2;
     }
 
-    public function addPawn($line, $column, $pawn, $indexDeck, $id_user) {
-        $this->board[$line][$column] = $pawn;
-
-        if ($id_user == $this->player1) {
-            $this->deckPlayer1[$indexDeck] = self::$empty;
-        } else {
-            $this->deckPlayer2[$indexDeck] = self::$empty;
+    public function addPawn($line, $column, $pawn, $rotation, $indexDeck, $id_user, $pushDirection) {
+        if ($line != 0 && $line != 4 && $column != 0 && $column != 4) {
+            return false;
         }
-        $this->nextUserPlaying();
+
+        if ($this->getUserDeckIndexEmpty($id_user, $indexDeck)) {
+            return false;
+        }
+
+        if ($this->boardCaseIsFree($line, $column)) {
+            $this->board[$line][$column] = $pawn.$rotation;
+    
+            if ($id_user == $this->player1) {
+                $this->deckPlayer1[$indexDeck] = self::$empty;
+            } else {
+                $this->deckPlayer2[$indexDeck] = self::$empty;
+            }
+            $this->nextUserPlaying();
+
+        } else {
+            $pasX = 0;
+            $pasY = 0;
+            if ($line == 0) {
+                $pasY = 1;
+            } elseif ($line == 4) {
+                $pasY = -1;
+            } elseif ($column == 0) {
+                $pasX = 1;
+            } elseif ($column == 4) {
+                $pasX = -1;
+            }
+            
+            if ($line == 0 && $column ==0) {
+                if ($pushDirection == "H") {
+                    $pasX = 1;
+                    $pasY = 0;
+                } else {
+                    $pasX = 0;
+                    $pasY = 1;
+                }
+            } elseif ($line == 0 && $column == 4) {
+                if ($pushDirection == "H") {
+                    $pasX = -1;
+                    $pasY = 0;
+                } else {
+                    $pasX = 0;
+                    $pasY = 1;
+                }
+            } elseif ($line == 4 && $column == 0) {
+                if ($pushDirection == "H") {
+                    $pasX = 1;
+                    $pasY = 0;
+                } else {
+                    $pasX = 0;
+                    $pasY = -1;
+                }
+            } elseif ($line == 4 && $column == 4) {
+                if ($pushDirection == "H") {
+                    $pasX = -1;
+                    $pasY = 0;
+                } else {
+                    $pasX = 0;
+                    $pasY = -1;
+                }
+            }
+
+            $res = $this->movePawn($line, $column, $pasX, $pasY, $this->board[$line][$column][0], $this->board[$line][$column][1], $id_user, 1);
+            if (!$res) {
+                return false;
+            }
+            $this->board[$line][$column] = $pawn.$rotation;
+    
+            if ($id_user == $this->player1) {
+                $this->deckPlayer1[$indexDeck] = self::$empty;
+            } else {
+                $this->deckPlayer2[$indexDeck] = self::$empty;
+            }
+        }
+        
+        return true;
     }
 
     public function getUserDeckIndexEmpty(int $id_user, int $index):bool {
@@ -115,17 +186,14 @@ class Game implements JsonSerializable
         $this->activePlayer = ($this->activePlayer + 1) % 2;
     }
 
-    public function movePawn($line, $column, $pasX, $pasY, $pawn, $rotation, $id_user) {
+    public function movePawn($line, $column, $pasX, $pasY, $pawn, $rotation, $id_user, $nbAlly = 0) {
         $newLine = $line + $pasY;
         $newColumn = $column + $pasX;
         if ($newLine < 0 || $newLine > 4 || $newColumn < 0 || $newColumn > 4) {
             return $this->recoverPawn($line, $column, $pawn, $id_user);
         }
         if ($this->board[$newLine][$newColumn] != self::$empty) {
-            return $this->pushObstacle($line, $column, $pasX, $pasY, $pawn, $rotation, $id_user);
-        }
-        if ($this->board[$line][$column][0] != $pawn) {
-            return false;
+            return $this->pushObstacle($line, $column, $pasX, $pasY, $pawn, $rotation, $id_user, $nbAlly);
         }
 
         $this->board[$newLine][$newColumn] = $pawn.$rotation;
@@ -194,7 +262,7 @@ class Game implements JsonSerializable
 
 
 
-    public function canPushObstacle($line, $column, $pasX, $pasY, $pawn, $rotation) {
+    public function canPushObstacle($line, $column, $pasX, $pasY, $pawn, $rotation, $na = 0) {
         $direction = $this->getDirectionFromPas($pasX, $pasY);
         $reverseDirection = $this->getReverseDirection($direction);
 
@@ -208,7 +276,7 @@ class Game implements JsonSerializable
 
         $newline = $line;
         $newcolumn = $column;
-        $nbAlly = 0;
+        $nbAlly = $na;
         $nbOpponent = 0;
         $nbRock = 0;
 
@@ -231,8 +299,8 @@ class Game implements JsonSerializable
         return $nbAlly - $nbOpponent - $nbRock >= 0;
     }
 
-    private function pushObstacle($line, $column, $pasX, $pasY, $pawn, $rotation, $id_user) {
-        if (!$this->canPushObstacle($line, $column, $pasX, $pasY, $pawn, $rotation)) {
+    private function pushObstacle($line, $column, $pasX, $pasY, $pawn, $rotation, $id_user, $nbAlly = 0) {
+        if (!$this->canPushObstacle($line, $column, $pasX, $pasY, $pawn, $rotation, $nbAlly)) {
             return false;
         }
 

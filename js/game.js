@@ -35,6 +35,7 @@ function generateContent(gameId, userId) {
         document.getElementById("rotateRight").addEventListener("click", rotateRight);
         
         document.getElementById("rotatePicture").src = "../img/"+myPawn+rotation+".gif";
+        document.getElementById("movePicture").src = "../img/"+myPawn+rotation+".gif";
 
         generatePlayerDeck(game.player1 == idUser ? game.deckPlayer1 : game.deckPlayer2);
         generateOpponentDeck(game.player1 == idUser ? game.deckPlayer2 : game.deckPlayer1);
@@ -105,7 +106,7 @@ function generateBoard(board) {
                 div.appendChild(img);
             }
             pawnContainer.appendChild(div);
-            div.addEventListener("click", clickOnBoardDiv(i, j));
+            div.addEventListener("mousedown", clickOnBoardDiv(i, j));
         }
     
     }
@@ -123,19 +124,34 @@ function verifyGameExist(gameId) {
 
 
 function clickOnBoardDiv(ligne, colonne) {
-    return function () {
-        if (board[ligne][colonne][0] == myPawn && board[ligne][colonne] != "ROCK") {
+    return function (event) {
+        if (!myTurn()) return;
+        if (board[ligne][colonne][0] == myPawn && board[ligne][colonne] != "ROCK" && !(selectedPawnDeck != -1 && (event.shiftKey))) {
             if (selectedPawnDeck != -1) {
-                document.querySelector(".player-deck").children[selectedPawnDeck].classList.remove("selectedCard");selectedPawnDeck = -1;
+                document.querySelector(".player-deck").children[selectedPawnDeck].classList.remove("selectedCard");
+                selectedPawnDeck = -1;
             }
             removeAllBright();
 
+            document.getElementById("movementDiv").style.visibility = "visible";
+            document.getElementById("confirmRotate").style.visibility = "visible";
+            document.getElementById("rotationDiv").style.visibility = "visible";
+
             brightCardAround(ligne, colonne);
+
+            rotation = board[ligne][colonne][1];
+            document.getElementById("rotatePicture").src = "../img/"+myPawn+rotation+".gif";
+            document.getElementById("movePicture").src = "../img/"+myPawn+rotation+".gif";
 
             selectedBoardLine = ligne;
             selectedBoardColumn = colonne;
         } else if (selectedPawnDeck != -1) {
-            fetch(`play.php?idGame=${idGame}&action=addPawn&line=${ligne}&column=${colonne}&pawn=${myDeck[selectedPawnDeck]}&rotation=S&userId=${idUser}&indexDeck=${selectedPawnDeck}`)
+            let pushDirection = "V";
+            if (event.button == 2) {
+                pushDirection = "H";
+            }
+
+            fetch(`play.php?idGame=${idGame}&action=addPawn&line=${ligne}&column=${colonne}&pawn=${myPawn}&rotation=${rotation}&userId=${idUser}&indexDeck=${selectedPawnDeck}&pushDirection=${pushDirection}`)
             .then(response => response.json())
             .then(game => {
                 if (game) {
@@ -148,6 +164,7 @@ function clickOnBoardDiv(ligne, colonne) {
 
 function clickOnDeckDiv(index) {
     return function () {
+        if (!myTurn()) return;
         if (myDeck[index] != myPawn) return;
 
         removeAllBright();
@@ -161,6 +178,10 @@ function clickOnDeckDiv(index) {
         }
         selectedPawnDeck = index;
         contoursBoardBright();
+
+        document.getElementById("movementDiv").style.visibility = "hidden";
+        document.getElementById("confirmRotate").style.visibility = "hidden";
+        document.getElementById("rotationDiv").style.visibility = "visible";
     }
 }
 
@@ -196,6 +217,7 @@ function rotateRight() {
         rotation = "S";
     }
     document.getElementById("rotatePicture").src = "../img/"+myPawn+rotation+".gif";
+    document.getElementById("movePicture").src = "../img/"+myPawn+rotation+".gif";
 }
 
 function rotateLeft() {
@@ -209,6 +231,7 @@ function rotateLeft() {
         rotation = "S";
     }
     document.getElementById("rotatePicture").src = "../img/"+myPawn+rotation+".gif";
+    document.getElementById("movePicture").src = "../img/"+myPawn+rotation+".gif";
 }
 
 
@@ -283,6 +306,11 @@ function updateContent() {
     .then(response => response.json())
         .then(game => {
             removeAllBright();
+
+            document.getElementById("movementDiv").style.visibility = "hidden";
+            document.getElementById("confirmRotate").style.visibility = "hidden";
+            document.getElementById("rotationDiv").style.visibility = "hidden";
+
             activePlayer = game.activePlayer;
             if (selectedPawnDeck != -1) {
                 document.querySelector(".player-deck").children[selectedPawnDeck].classList.remove("selectedCard");
@@ -298,6 +326,7 @@ function updateContent() {
             rotation = "S";
 
             document.getElementById("rotatePicture").src = "../img/"+myPawn+rotation+".gif";
+            document.getElementById("movePicture").src = "../img/"+myPawn+rotation+".gif";
 
             updateDeckPlayer(game.player1 == idUser ? game.deckPlayer1 : game.deckPlayer2);
             updateDeckOpponent(game.player1 == idUser ? game.deckPlayer2 : game.deckPlayer1);
@@ -316,21 +345,6 @@ function myTurn() {
     }
     return player2 == idUser;
 
-}
-
-
-function play(action, line, colonne) {
-    if (action == "addPawn") {
-        let pawn = myDeck[selectedPawnDeck];
-        let rota = rotation;
-        fetch(`play.php?idGame=${idGame}&action=${action}&line=${line}&column=${colonne}&pawn=${pawn}&rotation=${rota}&userId=${idUser}&indexDeck=${selectedPawnDeck}`)
-            .then(response => response.json())
-            .then(game => {
-                if (game) {
-                    updateContent();
-                } 
-            });
-    }
 }
 
 

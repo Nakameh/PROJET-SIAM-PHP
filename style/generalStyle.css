@@ -84,9 +84,17 @@
     grid-template-rows: repeat(5, 1fr);
 }
 
-#options{
+.options{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.myHidden{
+    visibility: hidden;
+}
+
+.reverse-image {
+    transform: scaleX(-1);
 }

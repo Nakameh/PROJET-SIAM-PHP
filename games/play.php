@@ -57,6 +57,10 @@ if ($game->getUserPlayingId() != $id_user) {
 if ($action == "addPawn") {
     $line = "";
     $column = "";
+    $pawn = "";
+    $rotation = "S";
+    $indexDeck = "";
+    $pushDirection = "";
     if (isset($_GET['line'])) {
         $line = $_GET['line'];
     } else {
@@ -91,25 +95,21 @@ if ($action == "addPawn") {
         exit();
     }
 
+    if (isset($_GET['pushDirection'])) {
+        $pushDirection = $_GET['pushDirection'];
+    } else {
+        echo 'false';
+        exit();
+    }
 
-    if ($line != 0 && $line != 4 && $column != 0 && $column != 4) {
+
+    $ret = $game->addPawn($line, $column, $pawn, $rotation, $indexDeck, $id_user, $pushDirection);
+    if (!$ret) {
         echo "false";
         exit();
     }
 
 
-    if (! $game->boardCaseIsFree($line, $column)){
-        echo "false";
-        exit();
-    }
-
-    if ($game->getUserDeckIndexEmpty($id_user, $indexDeck)) {
-        echo "false";
-        exit();
-    }
-
-
-    $game->addPawn($line, $column, $pawn.$rotation, $indexDeck, $id_user);
     $dbp->updateBoard($id_game, $game->jsonSerialize());
 
     echo "true";
