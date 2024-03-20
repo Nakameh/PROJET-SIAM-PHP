@@ -189,6 +189,13 @@ class Game implements JsonSerializable
     public function movePawn($line, $column, $pasX, $pasY, $pawn, $rotation, $id_user, $nbAlly = 0) {
         $newLine = $line + $pasY;
         $newColumn = $column + $pasX;
+
+        if ($line < 0 || $line > 4 || $column < 0 || $column > 4) {
+            return false;
+        }
+
+        $this->board[$line][$column] = $pawn.$rotation;
+
         if ($newLine < 0 || $newLine > 4 || $newColumn < 0 || $newColumn > 4) {
             return $this->recoverPawn($line, $column, $pawn, $id_user);
         }
