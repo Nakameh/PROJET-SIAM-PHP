@@ -243,10 +243,10 @@ class Game implements JsonSerializable
             return "S";
         }
         if ($pasX == 1 && $pasY == 0) {
-            return "W";
+            return "E";
         }
         if ($pasX == -1 && $pasY == 0) {
-            return "E";
+            return "W";
         }
         return "";
     }
