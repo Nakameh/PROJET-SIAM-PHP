@@ -80,19 +80,28 @@ if (isset($_GET['idGame'])) {
 
                             <div class="col-md-3 overflow-auto">
                                 <h2>Informations</h2>
-                                <ol>
-                                    <li>Shift click gauche pour enter un pion à une position si il y a déjà un de vos pion</li>
-                                    <li>Dans les coins, pour savoir dans quelle direction pousser :
-                                        <ul>
-                                            <li>Clic gauche : Pousser à la verticale</li>
-                                            <li>Clic droit : Pousser à l'horizontale</li>
-                                        </ul>
-                                    </li>
-                                </ol>
+                                <div class="myOverflowY">
+                                    <ol>
+                                        <li>Lire les règles dans l'onglet Règles pour comprendre le fonctionnement du jeu</li>
+                                        <li>Vous pouvez faire une action par tour de jeu si c'est le votre</li>
+                                        <li>Pour commencer la partie si c'est votre tour, sélectionner un pion de votre deck en bas et le placer sur une des cases d'entrée en vert</li>
+                                        <li>Ensuite pour manipuler cette pièces, cliquez dessus</li>
+                                        <li>Vous pouvez tourner les pièces avec les flèches dans la sections rotation des pièces</li>
+                                        <li>Vous pouvez déplacer les pièces avec les flèches dans la section mouvement des pièces</li>
+                                        <li>Vous pouvez sortie la pièce du plateau en la faisant se déplacer en dehors du plateau</li>
+                                        <li>Shift click gauche pour enter un pion à une position si il y a déjà un de vos pion</li>
+                                        <li>Dans les coins, pour savoir dans quelle direction pousser :
+                                            <ul>
+                                                <li>Clic gauche : Pousser à la verticale</li>
+                                                <li>Clic droit : Pousser à l'horizontale</li>
+                                            </ul>
+                                        </li>
+                                        <li>Votre objectif est de finir la partie en poussant un rocher en dehors du plateau, Bonne chance !</li>
+                                    </ol>
+                                </div>
                                 <hr>
-                                <h2>Options</h2>
-                                <div id="rotationDiv" class="options myHidden">
-                                    <div class="card-title">Rotation des pièces</div>
+                                <h3>Rotation des pièces</h3>
+                                <div id="rotationDiv" class="options myHidden myOverflowY">
                                     <br>
                                     <div>
                                         <button class="btn btn-primary margin20px" id="rotateLeft">
@@ -107,9 +116,9 @@ if (isset($_GET['idGame'])) {
                                 </div>
 
                                 <hr>
-                                
-                                <div id="movementDiv" class="options myHidden">
-                                    <div class="card-title">Mouvement des pièces</div>
+                                <h3>Mouvement des pièces</h3>
+
+                                <div id="movementDiv" class="options myHidden myOverflowY">
                                     <button class="btn btn-primary margin20px" id="moveUp"><i class="bi bi-arrow-up"></i></button>
                                     <div style="display: flex; align-items: center; justify-content: center;">
                                         <button class="btn btn-primary margin20px" id="moveLeft" style="flex-shrink: 1;"><i class="bi bi-arrow-left"></i></button>

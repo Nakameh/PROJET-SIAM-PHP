@@ -98,3 +98,10 @@
 .reverse-image {
     transform: scaleX(-1);
 }
+
+.myOverflowY {
+    height: 150px;
+    overflow-y: auto;
+    justify-content: center;
+    align-items: center;
+}
