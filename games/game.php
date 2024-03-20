@@ -101,7 +101,7 @@ if (isset($_GET['idGame'])) {
                                 </div>
                                 <hr>
                                 <h3>Rotation des pièces</h3>
-                                <div id="rotationDiv" class="options myHidden myOverflowY">
+                                <div id="rotationDiv" class="options myHidden">
                                     <br>
                                     <div>
                                         <button class="btn btn-primary margin20px" id="rotateLeft">
@@ -118,7 +118,7 @@ if (isset($_GET['idGame'])) {
                                 <hr>
                                 <h3>Mouvement des pièces</h3>
 
-                                <div id="movementDiv" class="options myHidden myOverflowY">
+                                <div id="movementDiv" class="options myHidden">
                                     <button class="btn btn-primary margin20px" id="moveUp"><i class="bi bi-arrow-up"></i></button>
                                     <div style="display: flex; align-items: center; justify-content: center;">
                                         <button class="btn btn-primary margin20px" id="moveLeft" style="flex-shrink: 1;"><i class="bi bi-arrow-left"></i></button>
