@@ -1,0 +1,92 @@
+.nav-item, .navbar-brand{
+    margin :auto 20px;
+}
+
+.container{
+    margin-top: 30px;
+}
+
+.background-image {
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    user-select: none;
+}
+
+.ml-auto{
+    margin-left: auto;
+}
+
+.margin20px{
+    margin: 20px;
+}
+
+.game-board{
+    background-image: url("../img/plateau.jpg");
+    background-size: cover;
+    width: 440px;
+    height: 440px;
+    margin : 20px auto;
+}
+
+.cardDeck{
+    border: 1px solid #000000;
+    margin: 5px;  
+    border-radius: 10px;
+}
+
+.cardDeck img{
+    height: 80px;
+    width: 80px;  
+}
+
+.player-deck .cardDeck:hover{
+    border: 2px solid #00ff00;
+}
+
+.player-deck .cardDeck:hover img{
+    height: 100px;
+    width: 100px;
+}
+
+.selectedCard{
+    border: 2px solid #00ff00;
+}
+
+.selectedCard img{
+    height: 100px;
+    width: 100px;
+}
+
+
+.opponent-deck, .player-deck{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+    border: 1px solid #000000;
+    border-radius: 10px;
+}
+
+.brightCard{
+    background-color: #00ff003f;
+}
+
+
+#pawnContainer{
+    margin: 20px;
+    padding-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+}
+
+#options{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
