@@ -1,6 +1,6 @@
 <?php
-require_once "../vue/head.php";
-require_once "../vue/body.php";
+require_once "../vue/vue.php";
+
 require_once "../db/databaseProject.php";
 
 session_start();
