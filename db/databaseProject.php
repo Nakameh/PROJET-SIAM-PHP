@@ -549,4 +549,14 @@ class DataBaseProject
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+
+
+
+    public function getLastMovementByUser(int $id_Game, int $id_User) {
+        $sql = "SELECT * FROM Movement WHERE id_Game = :id_Game AND id_User = :id_User ORDER BY id_Movement DESC LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([":id_Game" => $id_Game, ":id_User" => $id_User]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 }

@@ -20,6 +20,8 @@ $id_game = $_GET['idGame'];
 $action = $_GET['action'];
 $id_user = $_GET['userId'];
 
+$isAdmin = $dbp->isAdmin($id_user);
+
 
 $gamedb = $dbp->getGame($id_game);
 if (!$gamedb) {
@@ -41,7 +43,7 @@ $game = new Game(   $boardObject->lines,
                     $boardObject->deckPlayer2);
 
 
-if ($game->getUserPlayingId() != $id_user) {
+if ($game->getUserPlayingId() != $id_user && !$isAdmin) {
     echo "false";
     exit();
 }

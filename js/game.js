@@ -20,7 +20,7 @@ let idGame;
 let idUser;
 let isAdmin;
 
-
+let lastTurnOpponentPlayed = -1;
 
 
 
@@ -38,8 +38,9 @@ function main(ig, iu, ia) {
         idUser = iu;
         isAdmin = ia;
 
-        setInterval(gameFinished, 1000);
-        setInterval(verifyGameExist, 1000, idGame);
+        setInterval(gameFinished, 250);
+        setInterval(verifyGameExist, 250, idGame);
+        setInterval(updateIfOtherPlayerPlayed, 250);
 
         generateContent();
 
@@ -118,9 +119,7 @@ function generateContent() {
             generatePlayerDeck(game.player1 == idUser ? game.deckPlayer1 : game.deckPlayer2);
             generateOpponentDeck(game.player1 == idUser ? game.deckPlayer2 : game.deckPlayer1);
             generateBoard(game.board);
-            if (!myTurn()) {
-                setTimeout(updateContent, 250);
-            } else {
+            if (myTurn()) {
                 brightDeck();
                 brightMyPawn();
                 getLastMove();
@@ -319,13 +318,11 @@ function updateContent() {
             updateBoard(game.board);
             updateUserName();
 
-            if (!myTurn()) {
-                setTimeout(updateContent, 250);
-                return ;
+            if (myTurn()) {
+                brightDeck();
+                brightMyPawn();
+                getLastMove();
             }
-            brightDeck();
-            brightMyPawn();
-            getLastMove();
         });
 }
 
@@ -340,6 +337,7 @@ function updateContent() {
  * @returns {boolean} true si c'est le tour du joueur, false sinon
  */
 function myTurn() {
+    if (isAdmin) return true;
     if (activePlayer == 0) {
         return player1 == idUser;
     }
@@ -458,3 +456,27 @@ function getLastMove() {
         }
     });
 }
+
+
+
+/**
+ * @brief Fonction permettant de mettre à jour l'affichage si le joueur en face à jouer
+ */
+function updateIfOtherPlayerPlayed() {
+    let idOpponent = player1 == idUser ? player2 : player1;
+
+    fetch(`gameInformations.php?idGame=${idGame}&action=getLastMoveByPlayer&id_user=${idOpponent}`)
+        .then(response => response.json())
+        .then(game => {
+            if (game) {
+                let t = parseInt(game['turn_Movement'], 10);
+                if (t > lastTurnOpponentPlayed) {
+                    lastTurnOpponentPlayed = t;
+                    updateContent();
+                }
+            }
+        });
+}
+
+
+

@@ -65,6 +65,23 @@ if (isset($_GET['idGame']) && isset($_GET['action'])) {
         exit();
     
     }
+
+    if ($action == "getLastMoveByPlayer") {
+        if (isset($_GET['id_user'])) {
+            $id_user = $_GET['id_user'];
+            $lastMove = $dbp->getLastMovementByUser($idGame, $id_user);
+            if ($lastMove == false) {
+                echo "false";
+                exit();
+            }
+            
+            echo json_encode($lastMove);
+            exit();
+        } else {
+            echo "false";
+            exit();
+        }
+    }
 }
 
 
