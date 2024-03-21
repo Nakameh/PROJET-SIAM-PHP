@@ -85,7 +85,9 @@ if (isset($_GET['idGame'])) {
                                         <li>Lire les règles dans l'onglet Règles pour comprendre le fonctionnement du jeu</li>
                                         <li>Vous pouvez faire une action par tour de jeu si c'est le votre</li>
                                         <li>Pour commencer la partie si c'est votre tour, sélectionner un pion de votre deck en bas et le placer sur une des cases d'entrée en vert</li>
-                                        <li>Ensuite pour manipuler cette pièces, cliquez dessus</li>
+                                        <li>Ensuite pour manipuler cette pièces, cliquez dessus</li>3
+                                        <li>Les cases en vertes sont celles avec lesquelles vous pouvez intéragir/où vos pions peuvents se déplacer</li>
+                                        <li>Les cases en bleus sont celles représentant le dernier mouvement réalisé par votre adversaire</li>
                                         <li>Vous pouvez tourner les pièces avec les flèches dans la sections rotation des pièces</li>
                                         <li>Vous pouvez déplacer les pièces avec les flèches dans la section mouvement des pièces</li>
                                         <li>Vous pouvez sortie la pièce du plateau en la faisant se déplacer en dehors du plateau</li>
@@ -138,32 +140,10 @@ if (isset($_GET['idGame'])) {
     </div>
 
     <script src="../js/game.js"></script>
+    <script src="../js/vue.js"></script>
 
     <script>
-        document.addEventListener("contextmenu", function(e) {
-            e.preventDefault();
-        });
-
-        document.addEventListener("DOMContentLoaded", function() {
-            let idGameTmp = <?php echo $idGame; ?>;
-            let idUserTmp = <?php echo $id_user; ?>;
-
-            idGame = idGameTmp;
-            idUser = idUserTmp;
-
-            generateContent(idGameTmp, idUserTmp);
-
-            let intervalGameExist =setInterval(verifyGameExist, 250, idGameTmp);
-
-            document.getElementById("confirmRotate").addEventListener("click", confirmRotate);
-            
-            document.getElementById("moveUp").addEventListener("click", move(0, -1));
-            document.getElementById("moveDown").addEventListener("click", move(0, 1));
-            document.getElementById("moveLeft").addEventListener("click", move(-1, 0));
-            document.getElementById("moveRight").addEventListener("click", move(1, 0));
-
-            setInterval(gameFinished, 250);
-        });
+        document.addEventListener("DOMContentLoaded", main(<?php echo $idGame; ?>, <?php echo $id_user; ?>, <?php echo $isAdmin ? "true" : "false"; ?>));
     </script>
 </body>
 </html>
