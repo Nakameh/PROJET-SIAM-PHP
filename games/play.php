@@ -136,7 +136,7 @@ if ($action == "movePawn") {
     $turn = $dbp->getTurn($id_game);
     $dbp->addTurn($id_game);
 
-    $dbp->createMovement(time(), $line."-".$column, ($line + $pasX)."-".($column + $pasY), $action, $turn, $id_game, $id_user);
+    $dbp->createMovement(time(), $line."-".$column, ($line + $pasY)."-".($column + $pasX), $action, $turn, $id_game, $id_user);
 
     if ($game->getWinner() != -1) {
         $dbp->setIdWinner($id_game, $game->getWinner());
