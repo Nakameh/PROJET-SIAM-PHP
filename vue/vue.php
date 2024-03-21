@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Fonction qui affiche le head de la page en fonction du titre et du chemin vers la racine du site
+ * @param string $title Le titre de la page
+ * @param string $pathToRoot Le chemin vers la racine du site
+ */
 function echoHead($title, $pathToRoot) {
     ?>
     <head>
@@ -18,6 +24,15 @@ function echoHead($title, $pathToRoot) {
 }
 
 
+
+
+/**
+ * Fonction qui affiche le début du body de la page en fonction de la connexion de l'utilisateur, de son statut d'admin, de son nom d'utilisateur et du chemin vers la racine du site
+ * @param bool $isConnected Si l'utilisateur est connecté
+ * @param bool $isAdmin Si l'utilisateur est admin
+ * @param string $username Le nom d'utilisateur de l'utilisateur
+ * @param string $pathToRoot Le chemin vers la racine du site
+ */
 function displayBodyElements(bool $isConnected, bool $isAdmin, $username, $pathToRoot) {
     ?>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark"><a class="navbar-brand" href="<?php echo $pathToRoot ?>">
