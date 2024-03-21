@@ -11,6 +11,7 @@ let rotation;
 
 let idGame;
 let idUser;
+let isAdmin;
 
 
 
@@ -33,6 +34,8 @@ function generateContent(gameId, userId) {
         
         document.getElementById("rotateLeft").addEventListener("click", rotateLeft);
         document.getElementById("rotateRight").addEventListener("click", rotateRight);
+
+        document.getElementById("cancelSelection").addEventListener("click", cancelSelection);
         
         document.getElementById("rotatePicture").src = "../img/"+myPawn+rotation+".gif";
         document.getElementById("movePicture").src = "../img/"+myPawn+rotation+".gif";
@@ -42,6 +45,10 @@ function generateContent(gameId, userId) {
         generateBoard(game.board);
         if (!myTurn()) {
             setTimeout(updateContent, 250);
+        } else {
+            brightDeck();
+            brightMyPawn();
+            getLastMove();
         }
     });
 }
@@ -88,7 +95,7 @@ function generateBoard(board) {
     for (let i = 0; i < board.length; i++) {
         let line = board[i];
         for (let j = 0; j < line.length; j++) {
-            let pawn = line[j][0];
+            let pa = line[j][0];
             let rota = line[j][1];
 
             let div = document.createElement("div");
@@ -99,10 +106,10 @@ function generateBoard(board) {
                 img.src = "../img/rocher.gif";
                 img.alt = "ROCK";
                 div.appendChild(img);
-            } else if (pawn == "E" || pawn == "R") {
+            } else if (pa == "E" || pa == "R") {
                 let img = document.createElement("img");
-                img.src = `../img/${pawn}${rota}.gif`;
-                img.alt = pawn;
+                img.src = `../img/${pa}${rota}.gif`;
+                img.alt = pa;
                 div.appendChild(img);
             }
             pawnContainer.appendChild(div);
@@ -189,6 +196,12 @@ function clickOnDeckDiv(index) {
 function removeAllBright() {
     let pawnContainer = document.querySelector("#pawnContainer");
     for (let child of pawnContainer.children) {
+        child.classList.remove("brightCard");
+        child.classList.remove("lastMovement");
+    }
+
+    let playerDeckDiv = document.querySelector('.player-deck');
+    for (let child of playerDeckDiv.children) {
         child.classList.remove("brightCard");
     }
 }
@@ -335,7 +348,11 @@ function updateContent() {
 
             if (!myTurn()) {
                 setTimeout(updateContent, 250);
+                return ;
             }
+            brightDeck();
+            brightMyPawn();
+            getLastMove();
         });
 }
 
@@ -355,7 +372,12 @@ function updateUserName() {
     .then(game => {
         if (game) {
             let userPlayingTitle = document.querySelector("#playerTurn");
-            userPlayingTitle.textContent = "Tour de : "+game;
+            userPlayingTitle.textContent = "Tour : "+game['turn'] + " - " + game['username'];
+            if (myTurn()) {
+                userPlayingTitle.style.color = "green";
+            } else {
+                userPlayingTitle.style.color = "red";
+            }
         }
         
     });
@@ -411,6 +433,59 @@ function gameFinished() {
     .then(game => {
         if (game) {
             window.location.href = "gamewinner.php?idGame="+idGame;
+        }
+    });
+}
+
+
+function cancelSelection() {
+    selectedBoardLine = -1;
+    selectedBoardColumn = -1;
+    removeAllBright();
+    document.getElementById("movementDiv").style.visibility = "hidden";
+    document.getElementById("confirmRotate").style.visibility = "hidden";
+    document.getElementById("rotationDiv").style.visibility = "hidden";
+    if (selectedPawnDeck != -1) {
+        document.querySelector(".player-deck").children[selectedPawnDeck].classList.remove("selectedCard");
+        selectedPawnDeck = -1;
+    }
+    brightDeck();
+    brightMyPawn();
+    getLastMove();
+}
+
+
+
+function brightDeck() {
+    let playerDeckDiv = document.querySelector('.player-deck');
+    for (let child of playerDeckDiv.children) {
+        if (child.firstChild.src != "") {
+            child.classList.add("brightCard");
+        }
+    }
+}
+
+function brightMyPawn() {
+    let pawnContainer = document.querySelector("#pawnContainer");
+    for (let child of pawnContainer.children) {
+        if (child.childElementCount > 0 && child.firstChild.alt == myPawn) {
+            child.classList.add("brightCard");
+        }
+    }
+}
+
+
+function getLastMove() {
+    fetch(`gameInformations.php?idGame=${idGame}&action=getLastMove`)
+    .then(response => response.json())
+    .then(game => {
+        if (game) {
+            let fm = game['position_finale_Movement'].split("-");
+            let lm = parseInt(fm[0], 10);
+            let cm = parseInt(fm[1], 10);
+
+            let pawnContainer = document.querySelector("#pawnContainer");
+            pawnContainer.children[lm * 5 + cm].classList.add("lastMovement");
         }
     });
 }

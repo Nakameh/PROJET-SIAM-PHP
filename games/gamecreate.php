@@ -25,7 +25,7 @@ if (!isset($_SESSION['id_user'])) {
 
 $game = new Game(5, 5, 5, $id_user, 0, rand(0, 1));
 
-$idGame = $dbp->createGame($game->jsonSerialize(), 0, date("Y-m-d H:i:s", time()), 0, $id_user);
+$idGame = $dbp->createGame($game->jsonSerialize(), 1, date("Y-m-d H:i:s", time()), 0, $id_user);
 
 header("Location: gamewait.php?idGame=" . $idGame);
 exit();

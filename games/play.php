@@ -10,27 +10,14 @@ $dbp = new DataBaseProject("../db/projet.sqlite3");
 header("Content-Type: application/json");
 
 
-
-if (!isset($_GET['idGame'])) {
+if (!isset($_GET['idGame'], $_GET['action'], $_GET['userId'])) {
     echo "false";
     exit();
 }
+
+
 $id_game = $_GET['idGame'];
-
-
-$action = "";
-if (isset($_GET['action'])) {
-    $action = $_GET['action'];
-} else {
-    echo "false";
-    exit();
-}
-
-
-if (!isset($_GET['userId'])) {
-    echo "false";
-    exit();
-}
+$action = $_GET['action'];
 $id_user = $_GET['userId'];
 
 
@@ -43,8 +30,15 @@ if (!$gamedb) {
 $board = $gamedb['game_board_Game'];
 $boardObject = json_decode($board);
 
-$game = new Game($boardObject->lines, $boardObject->columns, $boardObject->deckSize, $gamedb["id_gameuser1"], $gamedb["id_gameuser2"],
-    $boardObject->activePlayer, $boardObject->board, $boardObject->deckPlayer1, $boardObject->deckPlayer2);
+$game = new Game(   $boardObject->lines,
+                    $boardObject->columns,
+                    $boardObject->deckSize,
+                    $gamedb["id_gameuser1"],
+                    $gamedb["id_gameuser2"],
+                    $boardObject->activePlayer,
+                    $boardObject->board,
+                    $boardObject->deckPlayer1,
+                    $boardObject->deckPlayer2);
 
 
 if ($game->getUserPlayingId() != $id_user) {
@@ -55,53 +49,17 @@ if ($game->getUserPlayingId() != $id_user) {
 
 
 if ($action == "addPawn") {
-    $line = "";
-    $column = "";
-    $pawn = "";
-    $rotation = "S";
-    $indexDeck = "";
-    $pushDirection = "";
-    if (isset($_GET['line'])) {
-        $line = $_GET['line'];
-    } else {
-        echo "false";
-        exit();
-    }
-    if (isset($_GET['column'])) {
-        $column = $_GET['column'];
-    } else {
+    if (!isset($_GET['line'], $_GET['column'], $_GET['pawn'], $_GET['rotation'], $_GET['indexDeck'], $_GET['pushDirection'])) {
         echo "false";
         exit();
     }
 
-    if (isset($_GET['pawn'])) {
-        $pawn = $_GET['pawn'];
-    } else {
-        echo "false";
-        exit();
-    }
-
-    if (isset($_GET['rotation'])) {
-        $rotation = $_GET['rotation'];
-    } else {
-        echo "false";
-        exit();
-    }
-
-    if (isset($_GET['indexDeck'])) {
-        $indexDeck = $_GET['indexDeck'];
-    } else {
-        echo 'false';
-        exit();
-    }
-
-    if (isset($_GET['pushDirection'])) {
-        $pushDirection = $_GET['pushDirection'];
-    } else {
-        echo 'false';
-        exit();
-    }
-
+    $line = $_GET['line'];
+    $column = $_GET['column'];
+    $pawn = $_GET['pawn'];
+    $rotation = $_GET['rotation'];
+    $indexDeck = $_GET['indexDeck'];
+    $pushDirection = $_GET['pushDirection'];
 
     $ret = $game->addPawn($line, $column, $pawn, $rotation, $indexDeck, $id_user, $pushDirection);
     if (!$ret) {
@@ -109,109 +67,10 @@ if ($action == "addPawn") {
         exit();
     }
 
-
     $dbp->updateBoard($id_game, $game->jsonSerialize());
-
-    echo "true";
-    exit();
-}
-
-
-if ($action == "rotatePawn") {
-    $line = "";
-    $column = "";
-    $rotation = "S";
-    $pawn = "";
-    if (isset($_GET['line'])) {
-        $line = $_GET['line'];
-    } else {
-        echo "false";
-        exit();
-    }
-    if (isset($_GET['column'])) {
-        $column = $_GET['column'];
-    } else {
-        echo "false";
-        exit();
-    }
-    if (isset($_GET['rotation'])) {
-        $rotation = $_GET['rotation'];
-    } else {
-        echo "false";
-        exit();
-    }
-    if (isset($_GET['pawn'])) {
-        $pawn = $_GET['pawn'];
-    } else {
-        echo "false";
-        exit();
-    }
-
-
-    $ret = $game->rotatePawn($line, $column, $pawn, $rotation);
-    if (!$ret) {
-        echo "false";
-        exit();
-    }
-
-    $dbp->updateBoard($id_game, $game->jsonSerialize());
-
-    echo "true";
-    exit();
-}
-
-if ($action == "movePawn") {
-    $line = "";
-    $column = "";
-    $pasX = "";
-    $pasY = "";
-    $pawn = "";
-    $rotation = "S";
-
-    if (isset($_GET['line'])) {
-        $line = $_GET['line'];
-    } else {
-        echo "false";
-        exit();
-    }
-    if (isset($_GET['column'])) {
-        $column = $_GET['column'];
-    } else {
-        echo "false";
-        exit();
-    }
-    if (isset($_GET['pasX'])) {
-        $pasX = $_GET['pasX'];
-    } else {
-        echo "false";
-        exit();
-    }
-    if (isset($_GET['pasY'])) {
-        $pasY = $_GET['pasY'];
-    } else {
-        echo "false";
-        exit();
-    }
-    if (isset($_GET['pawn'])) {
-        $pawn = $_GET['pawn'];
-    } else {
-        echo "false";
-        exit();
-    }
-    if (isset($_GET['rotation'])) {
-        $rotation = $_GET['rotation'];
-    } else {
-        echo "false";
-        exit();
-    }
-
-    $ret = $game->movePawn($line, $column, $pasX, $pasY, $pawn, $rotation, $id_user);
-    if (!$ret) {
-        echo "false";
-        exit();
-    }
-
-    $dbp->updateBoard($id_game, $game->jsonSerialize());
+    $turn = $dbp->getTurn($id_game);
+    $dbp->addTurn($id_game);
+    $dbp->createMovement(time(), $line."-".$column, $line."-".$column, $action, $turn, $id_game, $id_user);
 
     if ($game->getWinner() != -1) {
         $dbp->setIdWinner($id_game, $game->getWinner());
@@ -221,6 +80,69 @@ if ($action == "movePawn") {
     exit();
 }
 
+
+if ($action == "rotatePawn") {
+
+    if (!isset($_GET['line'], $_GET['column'], $_GET['pawn'], $_GET['rotation'])) {
+        echo "false";
+        exit();
+    }
+
+    $line = $_GET['line'];
+    $column = $_GET['column'];
+    $rotation = $_GET['rotation'];
+    $pawn = $_GET['pawn'];
+
+    $ret = $game->rotatePawn($line, $column, $pawn, $rotation);
+    if (!$ret) {
+        echo "false";
+        exit();
+    }
+
+    $dbp->updateBoard($id_game, $game->jsonSerialize());
+    $turn = $dbp->getTurn($id_game);
+    $dbp->addTurn($id_game);
+
+    $dbp->createMovement(time(), $line."-".$column, $line."-".$column, $action, $turn, $id_game, $id_user);
+
+    echo "true";
+    exit();
+}
+
+
+if ($action == "movePawn") {
+    if (!isset($_GET['line'], $_GET['column'], $_GET['pasX'], $_GET['pasY'], $_GET['pawn'], $_GET['rotation'])) {
+        echo "false";
+        exit();
+    }
+    $line = $_GET['line'];
+    $column = $_GET['column'];
+    $pasX = $_GET['pasX'];
+    $pasY = $_GET['pasY'];
+    $pawn = $_GET['pawn'];
+    $rotation = $_GET['rotation'];
+
+
+    $ret = $game->movePawn($line, $column, $pasX, $pasY, $pawn, $rotation, $id_user);
+
+    if (!$ret) {
+        echo "false";
+        exit();
+    }
+
+    $dbp->updateBoard($id_game, $game->jsonSerialize());
+    $turn = $dbp->getTurn($id_game);
+    $dbp->addTurn($id_game);
+
+    $dbp->createMovement(time(), $line."-".$column, ($line + $pasX)."-".($column + $pasY), $action, $turn, $id_game, $id_user);
+
+    if ($game->getWinner() != -1) {
+        $dbp->setIdWinner($id_game, $game->getWinner());
+    }
+
+    echo "true";
+    exit();
+}
 
 echo "false";
 exit();

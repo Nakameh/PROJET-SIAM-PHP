@@ -79,7 +79,7 @@ if (isset($_GET['idGame'])) {
                             <div class="col-md-1" style="border-right: 1px solid #ccc;"></div>
 
                             <div class="col-md-3 overflow-auto">
-                                <h2>Informations</h2>
+                                <h4>Informations</h4>
                                 <div class="myOverflowY">
                                     <ol>
                                         <li>Lire les règles dans l'onglet Règles pour comprendre le fonctionnement du jeu</li>
@@ -100,7 +100,9 @@ if (isset($_GET['idGame'])) {
                                     </ol>
                                 </div>
                                 <hr>
-                                <h3>Rotation des pièces</h3>
+                                <button class="btn btn-danger" id="cancelSelection">Annuler la sélection</button>
+                                <hr>
+                                <h4>Rotation des pièces</h4>
                                 <div id="rotationDiv" class="options myHidden">
                                     <br>
                                     <div>
@@ -116,7 +118,7 @@ if (isset($_GET['idGame'])) {
                                 </div>
 
                                 <hr>
-                                <h3>Mouvement des pièces</h3>
+                                <h4>Mouvement des pièces</h4>
 
                                 <div id="movementDiv" class="options myHidden">
                                     <button class="btn btn-primary margin20px" id="moveUp"><i class="bi bi-arrow-up"></i></button>

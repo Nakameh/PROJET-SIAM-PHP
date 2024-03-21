@@ -27,7 +27,8 @@ if (isset($_GET['idGame']) && isset($_GET['action'])) {
         if (isset($_GET['id_user'])) {
             $id_user = $_GET['id_user'];
             $username = $dbp->getUsername($id_user);
-            echo json_encode($username);
+            $turn = $dbp->getTurn($idGame);
+            echo json_encode(array("username" => $username, "turn" => $turn));
             exit();
         } else {
             echo "false";
@@ -48,6 +49,21 @@ if (isset($_GET['idGame']) && isset($_GET['action'])) {
         }
         echo "true";
         exit();
+    }
+
+    if ($action == "getLastMove") {
+        if ($game == false) {
+            echo "false";
+            exit();
+        }
+        $lastMove = $dbp->getLastMovement($idGame);
+        if ($lastMove == false) {
+            echo "false";
+            exit();
+        }
+        echo json_encode($lastMove);
+        exit();
+    
     }
 }
 
